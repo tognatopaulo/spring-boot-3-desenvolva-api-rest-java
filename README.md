@@ -157,3 +157,39 @@ cidade varchar(100) not null,
 primary key(id)
 );
 ```
+
+## Requisições GET
+
+
+Nessa aula, você aprendeu como:
+
+- Utilizar a anotação @GetMapping para mapear métodos em Controllers que produzem dados;
+- Utilizar a interface Pageable do Spring para realizar consultas com paginação;
+- Controlar a paginação e a ordenação dos dados devolvidos pela API com os parâmetros page, size e sort;
+- Configurar o projeto para que os comandos SQL sejam exibidos no console.
+
+Você precisará adicionar um novo método no Controller de paciente:
+
+```
+@GetMapping
+public Page<DadosListagemPaciente> listar(@PageableDefault(page = 0, size = 10, sort = {"nome"}) Pageable paginacao) {
+return repository.findAll(paginacao).map(DadosListagemPaciente::new);
+}
+```
+
+Também precisará criar o DTO DadosListagemPaciente:
+
+```
+public record DadosListagemPaciente(String nome, String email, String cpf) {
+public DadosListagemPaciente(Paciente paciente) {
+this(paciente.getNome(), paciente.getEmail(), paciente.getCpf());
+}
+}
+```
+
+E, caso queira ver os comandos SQL disparados no banco de dados, vai precisar adicionar as seguintes propriedades no arquivo application.properties:
+
+```
+spring.jpa.show-sql=true
+spring.jpa.properties.hibernate.format_sql=true
+```
