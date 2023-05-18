@@ -193,3 +193,99 @@ E, caso queira ver os comandos SQL disparados no banco de dados, vai precisar ad
 spring.jpa.show-sql=true
 spring.jpa.properties.hibernate.format_sql=true
 ```
+
+## Requisições PUT e DELETE
+
+Nessa aula, você aprendeu como:
+
+- Mapear requisições PUT com a anotação @PutMapping;
+- Escrever um código para atualizar informações de um registro no banco de dados;
+- Mapear requisições DELETE com a anotação @DeleteMapping;
+- Mapear parâmetros dinâmicos em URL com a anotação @PathVariable;
+- Implementar o conceito de exclusão lógica com o uso de um atributo booleano.
+
+
+Você precisará adicionar novos métodos no Controller de paciente:
+
+```
+@PutMapping
+@Transactional
+public void atualizar(@RequestBody @Valid DadosAtualizacaoPaciente dados) {
+var paciente = repository.getReferenceById(dados.id());
+paciente.atualizarInformacoes(dados);
+}
+
+@DeleteMapping("/{id}")
+@Transactional
+public void remover(@PathVariable Long id) {
+var paciente = repository.getReferenceById(id);
+paciente.inativar();
+}
+```
+
+Também precisará criar um atributo e novos métodos na entidade Paciente, além de modificar o construtor dela:
+
+```
+private Boolean ativo;
+
+public Paciente(DadosCadastroPaciente dados) {
+this.ativo = true;
+this.nome = dados.nome();
+this.email = dados.email();
+this.telefone = dados.telefone();
+this.cpf = dados.cpf();
+this.endereco = new Endereco(dados.endereco());
+}
+
+public void atualizarInformacoes(DadosAtualizacaoPaciente dados) {
+if (dados.nome() != null)
+this.nome = dados.nome();
+
+    if (dados.telefone() != null)
+        this.telefone = dados.telefone();
+
+    if (dados.endereco() != null)
+        endereco.atualizarInformacoes(dados.endereco());
+}
+
+public void inativar() {
+this.ativo = false;
+}
+```
+
+Na sequência, será necessário criar o DTO DadosAtualizacaoPaciente e modificar o DadosListagemPaciente:
+
+```
+public record DadosAtualizacaoPaciente(
+Long id,
+String nome,
+String telefone,
+@Valid DadosAtualizacaoEndereco endereco
+) {
+}
+
+public record DadosListagemPaciente(Long id, String nome, String email, String cpf) {
+public DadosListagemPaciente(Paciente paciente) {
+this(paciente.getId(), paciente.getNome(), paciente.getEmail(), paciente.getCpf());
+}
+}
+```
+
+Vai precisar também criar uma migration (Atenção! Lembre-se de parar o projeto antes de criar a migration!):
+
+```
+alter table pacientes add column ativo tinyint;
+update pacientes set ativo = 1;
+alter table pacientes modify ativo tinyint not null;
+```
+
+E, por fim, vai precisar atualizar o método da listagem na classe PacienteController, para trazer somente os pacientes ativos, além de também criar o novo método na interface PacienteRepository:
+
+```
+@GetMapping
+public Page<DadosListagemPaciente> listar(@PageableDefault(page = 0, size = 10, sort = { "nome" }) Pageable paginacao) {
+return pacienteRepository.findAllByAtivoTrue(paginacao).map(DadosListagemPaciente::new);
+}
+
+Page<Paciente> findAllByAtivoTrue(Pageable paginacao);
+```
