@@ -289,3 +289,18 @@ return pacienteRepository.findAllByAtivoTrue(paginacao).map(DadosListagemPacient
 
 Page<Paciente> findAllByAtivoTrue(Pageable paginacao);
 ```
+
+# spring-boot-aplique-boas-praticas-proteja-api-rest
+
+## Boas Práticas na API
+
+Nessa aula, você aprendeu como:
+
+- Utilizar a classe ResponseEntity, do Spring, para personalizar os retornos dos métodos de uma classe Controller;
+
+- Modificar o código HTTP devolvido nas respostas da API;
+
+- Adicionar cabeçalhos nas respostas da API;
+
+- Utilizar os códigos HTTP mais apropriados para cada operação realizada na API.
+

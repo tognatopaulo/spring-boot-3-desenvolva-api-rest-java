@@ -14,7 +14,7 @@ create table pacientes(
                           uf char(2) not null,
                           cidade varchar(100) not null,
                           telefone varchar(20) not null,
-                          ativo smallint not null,
+                          ativo boolean not null,
 
                           primary key(id)
 
