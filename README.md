@@ -115,17 +115,17 @@ public interface PacienteRepository extends JpaRepository<Paciente, Long> {
 Depois, precisará alterar as classes Controller e DTO:
 
 ```
-    @RestController
-    @RequestMapping("pacientes")
-    public class PacienteController {
+- @RestController
+- @RequestMapping("pacientes")
+- public class PacienteController {
 
-    @Autowired
-    private PacienteRepository repository;
+- @Autowired
+- private PacienteRepository repository;
 
-    @PostMapping
-    @Transactional
-    public void cadastrar(@RequestBody @Valid DadosCadastroPaciente dados) {
-    repository.save(new Paciente(dados));
+- @PostMapping
+- @Transactional
+- public void cadastrar(@RequestBody @Valid DadosCadastroPaciente dados) {
+- repository.save(new Paciente(dados));
 }
 
 public record DadosCadastroPaciente(
@@ -241,11 +241,11 @@ public void atualizarInformacoes(DadosAtualizacaoPaciente dados) {
 if (dados.nome() != null)
 this.nome = dados.nome();
 
-    if (dados.telefone() != null)
-        this.telefone = dados.telefone();
+- if (dados.telefone() != null)
+- - this.telefone = dados.telefone();
 
-    if (dados.endereco() != null)
-        endereco.atualizarInformacoes(dados.endereco());
+- if (dados.endereco() != null)
+- - endereco.atualizarInformacoes(dados.endereco());
 }
 
 public void inativar() {
@@ -303,4 +303,18 @@ Nessa aula, você aprendeu como:
 - Adicionar cabeçalhos nas respostas da API;
 
 - Utilizar os códigos HTTP mais apropriados para cada operação realizada na API.
+
+## Lidando com erros
+
+Nessa aula, você aprendeu como:
+
+- Criar uma classe para isolar o tratamento de exceptions da API, com a utilização da anotação @RestControllerAdvice;
+
+- Utilizar a anotação @ExceptionHandler, do Spring, para indicar qual exception um determinado método da classe de tratamento de erros deve capturar;
+
+- Tratar erros do tipo 404 (Not Found) na classe de tratamento de erros;
+
+- Tratar erros do tipo 400 (Bad Request), para erros de validação do Bean Validation, na classe de tratamento de erros;
+
+- Simplificar o JSON devolvido pela API em casos de erro de validação do Bean Validation.
 
